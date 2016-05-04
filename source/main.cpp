@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     });
     config.load(argc, argv);
     std::map<std::string, std::unique_ptr<util::CFLNode>> databases;
-    for (const auto& file : {"database", " resume"})
+    for (const auto& file : {"database", "resume"})
     {
         const auto filename = config.value(file);
         if (!util::fileExists(filename))
@@ -47,53 +47,58 @@ int main(int argc, char* argv[])
         std::cout << file.name << " does not exist." << std::endl;
         exit(1);
     }
-    auto templateContent = file.content();
+    const auto templateContent = file.content();
 
     const std::string beginTag = "<@";
     const std::string endTag = "@>";
     const std::string loopDelimiter = "|";
 
-    auto isTag = [&](unsigned int i, std::string tag)
+    const auto isTag = [&](unsigned int& i, std::string tag)
     {
-        return templateContent.substr(i, tag.size()) == tag;
+        auto match = templateContent.substr(i, tag.size()) == tag;
+        if (match)
+        {
+            i += tag.size();
+        }
+        return match;
     };
-    auto collectUntil = [&](unsigned int& i, std::string tag)
+    const auto collectUntil = [&](unsigned int& i, std::string tag)
     {
         std::string collected = "";
-        while (isTag(i, tag))
+        while (!isTag(i, tag))
         {
             if (templateContent[i] != ' ')
                 collected += templateContent[i];
             ++i;
+            // TODO: error message on end
         }
-        i += tag.size();
         return collected;
     };
 
     std::vector<Loop> loops;
     std::stringstream output;
-    for (unsigned int i = 0; i < templateContent.size(); ++i)
+    for (unsigned int i = 0; i < templateContent.size();)
     {
         if (isTag(i, beginTag))
         {
-            i += beginTag.size();
             if (isTag(i, loopDelimiter))
             {
-                i += loopDelimiter.size();
-                auto name = collectUntil(i, loopDelimiter);
+                const auto name = collectUntil(i, loopDelimiter);
                 loops.push_back({i, name});
+                // TODO: check tag existence
             }
             else
             {
-                auto name = collectUntil(i, endTag);
-                // TODO insert replacement
+                const auto name = collectUntil(i, endTag);
+                // TODO: insert replacement
             }
         }
         else if (isTag(i, endTag))
         {
-            i += endTag.size();
-            if (1 /* loop is finished */)
+            if (1 /* TODO: loop is finished */)
             {
+                assert(loops.size() > 0);
+                // TODO: error message
                 loops.pop_back();
             }
             else
@@ -105,12 +110,13 @@ int main(int argc, char* argv[])
         else
         {
             output << templateContent[i];
+            ++i;
         }
     }
     util::File out{config.value("resume") + ".tex"};
     out.setContent(output.str());
-    std::string command = "pdflatex ";
-    if (system((command + out.name).c_str()))
+    std::string command = "pdflatex -interaction=batchmode ";
+    if (system((command + out.path).c_str()))
     {
         std::cout << "Error while building pdf." << std::endl;
         exit(3);
