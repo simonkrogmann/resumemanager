@@ -7,12 +7,7 @@
 #include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
 
-struct Loop
-{
-    unsigned int begin;
-    std::string tag;
-    unsigned int index = 0;
-};
+#include "Resume.h"
 
 int main(int argc, char* argv[])
 {
@@ -22,30 +17,18 @@ int main(int argc, char* argv[])
         {"database", ""}, {"resume", ""}, {"template", ""},
     });
     config.load(argc, argv);
-    std::map<std::string, std::unique_ptr<util::CFLNode>> databases;
-    for (const auto& file : {"database", "resume"})
+
+    Resume resume{config.value("database"), config.value("resume")};
+    if (!resume.valid())
     {
-        const auto filename = config.value(file);
-        if (!util::fileExists(filename))
-        {
-            std::cout << filename << " does not exist." << std::endl;
-            exit(1);
-        }
-        auto database = util::parseCFL(filename);
-        if (!database->valid())
-        {
-            std::cout << "Error in " << filename << std::endl;
-            std::cout << database->message() << std::endl;
-            exit(2);
-        }
-        databases[file] = std::move(database);
+        exit(1);
     }
 
     const util::File file{config.value("template")};
     if (!file.exists())
     {
         std::cout << file.name << " does not exist." << std::endl;
-        exit(1);
+        exit(2);
     }
     const auto templateContent = file.content();
 
@@ -75,7 +58,7 @@ int main(int argc, char* argv[])
         return collected;
     };
 
-    std::vector<Loop> loops;
+    std::vector<unsigned int> loops;
     std::stringstream output;
     for (unsigned int i = 0; i < templateContent.size();)
     {
@@ -84,27 +67,26 @@ int main(int argc, char* argv[])
             if (isTag(i, loopDelimiter))
             {
                 const auto name = collectUntil(i, loopDelimiter);
-                loops.push_back({i, name});
-                // TODO: check tag existence
+                loops.push_back(i);
+                resume.pushTag(name);
             }
             else
             {
                 const auto name = collectUntil(i, endTag);
-                // TODO: insert replacement
+                output << resume.value(name);
             }
         }
         else if (isTag(i, endTag))
         {
-            if (1 /* TODO: loop is finished */)
+            if (resume.next())
+            {
+                i = loops.back();
+            }
+            else
             {
                 assert(loops.size() > 0);
                 // TODO: error message
                 loops.pop_back();
-            }
-            else
-            {
-                loops.back().index += 1;
-                i = loops.back().begin;
             }
         }
         else

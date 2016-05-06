@@ -2,9 +2,11 @@ set(target build-resume)
 
 set(sources
     main.cpp
+    Resume.cpp
 )
 
 set(includes
+    Resume.h
 )
 
 set(resources
