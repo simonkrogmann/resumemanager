@@ -1,11 +1,11 @@
 #include <iostream>
 #include <map>
-#include <string>
 #include <sstream>
+#include <string>
 
-#include <utilgpu/qt/Config.h>
 #include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
+#include <utilgpu/qt/Config.h>
 
 #include "Resume.h"
 
@@ -36,8 +36,7 @@ int main(int argc, char* argv[])
     const std::string endTag = "@>";
     const std::string loopDelimiter = "|";
 
-    const auto isTag = [&](unsigned int& i, std::string tag)
-    {
+    const auto isTag = [&](unsigned int& i, std::string tag) {
         auto match = templateContent.substr(i, tag.size()) == tag;
         if (match)
         {
@@ -45,8 +44,7 @@ int main(int argc, char* argv[])
         }
         return match;
     };
-    const auto collectUntil = [&](unsigned int& i, std::string tag)
-    {
+    const auto collectUntil = [&](unsigned int& i, std::string tag) {
         std::string collected = "";
         while (!isTag(i, tag))
         {

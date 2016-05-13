@@ -1,9 +1,10 @@
 #include "Resume.h"
 
+#include <algorithm>
 #include <iostream>
 
-#include <utilgpu/cpp/file.h>
 #include <utilgpu/cpp/cfl.h>
+#include <utilgpu/cpp/file.h>
 
 Resume::Resume(const util::File& database, const util::File& resume)
     : m_valid{true}
@@ -34,53 +35,93 @@ std::unique_ptr<util::CFLNode> Resume::loadCFL(util::File file)
     return database;
 }
 
+std::string resolveIndex(const unsigned int& index,
+                         const std::vector<std::string>& source,
+                         const std::vector<std::string>& alternative,
+                         const std::vector<std::string>& important,
+                         const std::vector<std::string>& remove)
+{
+    auto isElement = [](auto element, auto vector) {
+        return std::find(vector.begin(), vector.end(), element) != vector.end();
+    };
+    if (alternative.size() > 0)
+    {
+        if (alternative.size() <= index)
+        {
+            return "";
+        }
+        return alternative[index];
+    }
+    if (important.size() > 0 || remove.size() > 0)
+    {
+        if (index < important.size())
+        {
+            return important[index];
+        }
+        auto actualIndex = important.size();
+        for (const auto& el : source)
+        {
+            if (!isElement(el, important) && !isElement(el, remove))
+            {
+                ++actualIndex;
+            }
+            if (actualIndex > index)
+            {
+                return el;
+            }
+        }
+        return "";
+    }
+    if (source.size() <= index)
+    {
+        return "";
+    }
+    return source[index];
+}
+
 util::CFLNode* Resume::query(const std::string& tag) const
 {
     auto target = m_database.get();
     auto alt_target = m_resume.get();
     for (const auto& loop : m_loops)
     {
-        const auto& candidates = (*target)[loop.tag]->children();
+        std::vector<std::string> source;
+        std::vector<std::string> important;
+        std::vector<std::string> remove;
+        std::vector<std::string> alternative;
+        for (const auto& candidate : (*target)[loop.tag]->children())
+        {
+            source.push_back(candidate->name());
+        }
+
         if (alt_target != nullptr)
         {
+            important = (*alt_target)[loop.tag + "-important"]->values();
+            remove = (*alt_target)[loop.tag + "-remove"]->values();
             alt_target = (*alt_target)[loop.tag];
+            alternative = alt_target->values();
         }
 
-        // list overridden in specific resume
-        // choose node according to specific resume
-        if (alt_target != nullptr && alt_target->values().size() > 0)
-        {
-            const auto values = alt_target->values();
-            if (loop.index >= values.size())
-            {
-                return nullptr;
-            }
-            target = (*(*target)[loop.tag])[values[loop.index]];
-            alt_target = nullptr;
-            continue;
-        }
+        const auto actual =
+            resolveIndex(loop.index, source, alternative, important, remove);
 
-        if (loop.index >= candidates.size())
+        if (actual == "")
         {
             return nullptr;
         }
-        target = candidates[loop.index].get();
-        assert(target != nullptr);
+        target = (*(*target)[loop.tag])[actual];
 
         // advance in specific resume
         if (alt_target != nullptr && alt_target->children().size() > 0)
         {
-            const auto& children = alt_target->children();
-            if (loop.index >= children.size())
-            {
-                alt_target = nullptr;
-            }
-            else
-            {
-                alt_target = children[loop.index].get();
-            }
+            alt_target = (*alt_target)[actual];
+        }
+        else
+        {
+            alt_target = nullptr;
         }
     }
+
     if (tag == "")
         return target;
 
