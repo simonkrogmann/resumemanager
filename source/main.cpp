@@ -5,6 +5,8 @@
 
 #include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
+#include <utilgpu/cpp/resource.h>
+#include <utilgpu/cpp/str.h>
 #include <utilgpu/qt/Config.h>
 
 #include "Resume.h"
@@ -14,7 +16,7 @@ int main(int argc, char* argv[])
     std::string applicationName = "build-resume";
     util::Config config{"simonkrogmann", applicationName};
     config.setDefaults({
-        {"database", ""}, {"resume", ""}, {"template", ""},
+        {"database", ""}, {"resume", ""}, {"template", "builtin/base.tex"},
     });
     config.load(argc, argv);
 
@@ -24,10 +26,15 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    const util::File file{config.value("template")};
+    const auto templatePath = config.value("template");
+
+    std::cout << util::startsWith(templatePath, "builtin") << std::endl;
+    const auto file = util::startsWith(templatePath, "builtin")
+                          ? util::loadResource<resumemanager>(templatePath)
+                          : util::File(templatePath);
     if (!file.exists())
     {
-        std::cout << file.name << " does not exist." << std::endl;
+        std::cout << file.path << " does not exist." << std::endl;
         exit(2);
     }
     const auto templateContent = file.content();

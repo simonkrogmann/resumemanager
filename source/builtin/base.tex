@@ -1,0 +1,86 @@
+\documentclass[a4paper,10pt]{scrartcl}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage{tabularx}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{paracol}
+\usepackage[hidelinks]{hyperref}
+\usepackage{breakurl}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+
+
+\titlespacing\section{0pt}{15pt}{5pt}
+\titlespacing\subsection{0pt}{8pt}{2pt}
+
+\newcommand{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
+\newcommand{\heading}[1]{\section*{{\large \uppercase{\textbf{#1}}}}}
+\newcommand{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+
+
+\definecolor{dark}{RGB}{100, 100, 100}
+\newcommand{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[3pt]}
+
+\setlength{\parindent}{0pt}
+\setlength{\columnsep}{1cm}
+
+\begin{document}
+\columnratio{0.7}
+\pagenumbering{gobble}
+\begin{paracol}{2}
+
+\name{<@ name @>}\\
+<@ description @>
+
+\heading{Experience}
+<@| jobs |
+    \subheading{<@ company @>}{<@ location @>}{<@ brief @>}
+    \timeperiod{<@ from @> - <@ to @>}
+    <@ description @>
+@>
+
+\heading{Education}
+<@| education |
+    \subheading{<@ name@>}{<@ location @>}{<@ degree @>}
+    \timeperiod{<@ from @> - <@ to @>}
+    <@ description @>
+@>
+
+\heading{Projects}
+<@| projects |
+    \subheading{<@ name@>}{}{<@ brief @>}
+    <@ description @>
+@>
+
+\heading{Publications}
+<@| publications |
+    \subheading{<@ name@>}{}{<@ detail @>}
+@>
+
+\switchcolumn
+\raggedright
+
+<@ address @>\\
+<@ phone @>\\
+<@ mail @>\\
+<@ github @>\\
+
+\heading{Skills}
+<@| technologies | {<@ @>}, @>
+\\
+
+\heading{Awards}
+<@| awards |
+    \textbf{<@ name @>} <@ detail @>
+    \\[5pt]
+@>
+\heading{Languages}
+<@| languages |
+    <@ name @>: <@ level @>
+    \\
+@>
+
+\end{paracol}
+\end{document}

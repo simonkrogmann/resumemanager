@@ -10,6 +10,7 @@ set(includes
 )
 
 set(resources
+    builtin/base.tex
 )
 
 set(libraries
@@ -17,3 +18,4 @@ set(libraries
 )
 
 create_executable(${project} ${target} "${sources}" "${includes}" "${libraries}")
+generate_resource_header(${project} ${target} "${resources}")

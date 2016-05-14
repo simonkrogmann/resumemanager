@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-set(project resume-manager)
+set(project resumemanager)
 project(${project})
 
 set(use_utilgpu_compilation_options ON)
