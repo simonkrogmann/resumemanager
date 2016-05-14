@@ -1,14 +1,13 @@
 #include <iostream>
 #include <map>
-#include <sstream>
 #include <string>
 
-#include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
 #include <utilgpu/cpp/resource.h>
 #include <utilgpu/cpp/str.h>
 #include <utilgpu/qt/Config.h>
 
+#include "Template.h"
 #include "TemplateData.h"
 
 int main(int argc, char* argv[])
@@ -36,114 +35,10 @@ int main(int argc, char* argv[])
         std::cout << file.path << " does not exist." << std::endl;
         exit(2);
     }
-    const auto templateContent = file.content();
+    Template resumeTemplate{&resume, file};
 
-    const std::string beginTag = "<@";
-    const std::string endTag = "@>";
-    const std::string loopDelimiter = "|";
-
-    const auto isTag = [&](unsigned int& i, std::string tag) {
-        auto match = templateContent.substr(i, tag.size()) == tag;
-        if (match)
-        {
-            i += tag.size();
-        }
-        return match;
-    };
-    const auto collectUntil = [&](unsigned int& i, std::string tag,
-                                  bool spaces = false) {
-        std::string collected = "";
-        while (!isTag(i, tag))
-        {
-            if (templateContent[i] != ' ' || spaces)
-                collected += templateContent[i];
-            ++i;
-            if (i >= templateContent.size())
-            {
-                std::cout << "Expected " << tag << " but reached end instead."
-                          << std::endl;
-                exit(6);
-            }
-        }
-        return collected;
-    };
-
-    std::vector<unsigned int> loops;
-    std::stringstream output;
-    for (unsigned int i = 0; i < templateContent.size();)
-    {
-        if (isTag(i, beginTag))
-        {
-            if (isTag(i, loopDelimiter))
-            {
-                const auto name = collectUntil(i, loopDelimiter);
-                resume.pushTag(name);
-                if (resume.empty())
-                {
-                    // skip loop content
-                    auto counter = 1;
-                    while (counter > 0)
-                    {
-                        if (isTag(i, beginTag))
-                        {
-                            ++counter;
-                        }
-                        else if (isTag(i, endTag))
-                        {
-                            --counter;
-                        }
-                        else
-                        {
-                            ++i;
-                        }
-                    }
-                    resume.next();
-                }
-                else
-                {
-                    output << collectUntil(i, loopDelimiter, true);
-                    loops.push_back(i);
-                }
-            }
-            else
-            {
-                const auto name = collectUntil(i, endTag);
-                output << resume.value(name);
-            }
-        }
-        else if (isTag(i, endTag))
-        {
-            auto split = isTag(i, loopDelimiter)
-                             ? collectUntil(i, loopDelimiter, true)
-                             : "";
-            if (resume.next())
-            {
-                i = loops.back();
-                output << split;
-            }
-            else
-            {
-                if (loops.size() == 0)
-                {
-                    std::cout << "Extra close tag found" << std::endl;
-                    exit(4);
-                }
-                loops.pop_back();
-            }
-        }
-        else
-        {
-            output << templateContent[i];
-            ++i;
-        }
-    }
-    if (loops.size() != 0)
-    {
-        std::cout << "A loop wasn't closed." << std::endl;
-        exit(5);
-    }
     util::File out{config.value("resume") + ".tex"};
-    out.setContent(output.str());
+    out.setContent(resumeTemplate.result());
     std::string command = "pdflatex -interaction=batchmode ";
     if (system((command + out.path).c_str()))
     {

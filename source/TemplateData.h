@@ -20,7 +20,7 @@ struct Loop
 class TemplateData
 {
 public:
-    TemplateData(const util::File& database, const util::File& TemplateData);
+    TemplateData(const util::File& database, const util::File& specific);
     ~TemplateData();
 
     void pushTag(const std::string& tag);

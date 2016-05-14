@@ -7,11 +7,11 @@
 #include <utilgpu/cpp/file.h>
 
 TemplateData::TemplateData(const util::File& database,
-                           const util::File& TemplateData)
+                           const util::File& specific)
     : m_valid{true}
 {
     m_database = loadCFL(database);
-    m_resume = loadCFL(TemplateData);
+    m_resume = loadCFL(specific);
 }
 
 TemplateData::~TemplateData()
@@ -112,7 +112,7 @@ util::CFLNode* TemplateData::query(const std::string& tag) const
         }
         target = (*(*target)[loop.tag])[actual];
 
-        // advance in specific TemplateData
+        // advance in specific data
         if (alt_target != nullptr && alt_target->children().size() > 0)
         {
             alt_target = (*alt_target)[actual];
@@ -141,6 +141,7 @@ bool TemplateData::next()
     auto node = query();
     if (node == nullptr)
     {
+        assert(m_loops.size() > 0);
         m_loops.pop_back();
         return false;
     }
