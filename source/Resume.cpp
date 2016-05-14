@@ -146,10 +146,24 @@ bool Resume::next()
     return true;
 }
 
+std::string Resume::path() const
+{
+    std::string result;
+    for (const auto& loop : m_loops)
+    {
+        result += loop.tag + " -> ";
+    }
+    return result;
+}
+
 std::string Resume::value(const std::string& tag) const
 {
     auto node = query(tag);
-    assert(node != nullptr);
+    if (node == nullptr || node->values().size() == 0)
+    {
+        std::cout << path() << tag << " does not exist." << std::endl;
+        exit(1);
+    }
     return node->value();
 }
 

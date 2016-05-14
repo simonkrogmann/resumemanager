@@ -32,6 +32,7 @@ public:
 private:
     std::unique_ptr<util::CFLNode> loadCFL(util::File file);
     util::CFLNode* query(const std::string& tag = "") const;
+    std::string path() const;
 
     std::unique_ptr<util::CFLNode> m_database;
     std::unique_ptr<util::CFLNode> m_resume;
