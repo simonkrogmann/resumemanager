@@ -24,9 +24,9 @@ public:
 
 private:
     bool matchTag(const std::string& tag);
-    std::string collectUntil(const std::string& tag,
-                             const bool& spaces = false);
-    void jumpToMatchingTag(const std::string& begin, const std::string& end);
+    std::string collectToMatchingTag(const std::string& end,
+                                     const std::string& begin = "",
+                                     const bool& spaces = true);
 
     bool parse();
     void parseLoop();

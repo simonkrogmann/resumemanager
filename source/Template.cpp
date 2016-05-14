@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
-#include <vector>
 
 #include <utilgpu/cpp/file.h>
 
@@ -30,31 +29,21 @@ bool Template::matchTag(const std::string& tag)
     return match;
 }
 
-std::string Template::collectUntil(const std::string& tag, const bool& spaces)
+std::string Template::collectToMatchingTag(const std::string& end,
+                                           const std::string& begin,
+                                           const bool& spaces)
 {
     std::string collected = "";
-    while (!matchTag(tag))
-    {
-        if (m_templateContent[m_position] != ' ' || spaces)
-            collected += m_templateContent[m_position];
-        ++m_position;
-        if (m_position >= m_templateContent.size())
-        {
-            std::cout << "Expected " << tag << " but reached end instead."
-                      << std::endl;
-            exit(6);
-        }
-    }
-    return collected;
-}
-
-void Template::jumpToMatchingTag(const std::string& begin,
-                                 const std::string& end)
-{
     auto counter = 1;
     while (counter > 0)
     {
-        if (matchTag(begin))
+        if (m_position >= m_templateContent.size())
+        {
+            std::cout << "Expected " << end << " but reached end instead."
+                      << std::endl;
+            exit(6);
+        }
+        if (begin != "" && matchTag(begin))
         {
             ++counter;
         }
@@ -64,9 +53,12 @@ void Template::jumpToMatchingTag(const std::string& begin,
         }
         else
         {
+            if (m_templateContent[m_position] != ' ' || spaces)
+                collected += m_templateContent[m_position];
             ++m_position;
         }
     }
+    return collected;
 }
 bool Template::parse()
 {
@@ -80,7 +72,7 @@ bool Template::parse()
             }
             else
             {
-                const auto name = collectUntil(endTag);
+                const auto name = collectToMatchingTag(endTag, beginTag, false);
                 m_output << m_data->value(name);
             }
         }
@@ -99,16 +91,16 @@ bool Template::parse()
 
 void Template::parseLoop()
 {
-    const auto name = collectUntil(loopDelimiter);
+    const auto name = collectToMatchingTag(loopDelimiter, "", false);
     m_data->pushTag(name);
     if (m_data->empty())
     {
         // skip loop content
-        jumpToMatchingTag(beginTag, endTag);
+        collectToMatchingTag(endTag, beginTag);
         m_data->next();
         return;
     }
-    m_output << collectUntil(loopDelimiter, true);
+    m_output << collectToMatchingTag(loopDelimiter);
     const auto loopBegin = m_position;
     while (true)
     {
@@ -121,16 +113,13 @@ void Template::parseLoop()
         std::string split = "";
         if (matchTag(loopDelimiter))
         {
-            split = collectUntil(loopDelimiter, true);
+            split = collectToMatchingTag(loopDelimiter);
         }
-        if (m_data->next())
-        {
-            m_output << split;
-        }
-        else
+        if (!m_data->next())
         {
             break;
         }
+        m_output << split;
     }
 }
 
