@@ -1,0 +1,78 @@
+name: "John Doe"
+description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+address: "
+   200 Main Street\\
+   City, State 71932"
+phone: "(012) 345-6789"
+mail: john.doe@mail.com
+github: github.com/resumeexample
+
+technologies:
+    c++: C++
+    js: Javascript
+projects:
+    project1:
+        name: "Project 1"
+        brief: "Project Context"
+        description: "Lorem ipsum (\url{example.com/foo}) dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    project2:
+        name: "Project 2"
+        brief: "Project Context"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    project3:
+        name: "Project 3"
+        brief: "Project Context"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    project4:
+        name: "Project 4"
+        brief: "Project Context"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+education:
+    university:
+        name: "Some University"
+        location: City
+        degree: Bachelor
+        from: "October 2010"
+        to: "September 2013"
+        description: "GPA: 3.0\\
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    uvh:
+        name: "Some school"
+        location: "Another City"
+        degree: "High School Dimploma"
+        from: "September 2006"
+        to: "July 2010"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+awards:
+    award1:
+        name: "Scholarship for Lorem Ipsum"
+        detail: "Lorem ipsum dolor sit amet."
+    award1:
+        name: "Lorem Ipsum Award"
+        detail: "Lorem ipsum dolor sit amet."
+jobs:
+    company1:
+        company: "Company 1"
+        location: City
+        from: "September 2014"
+        to: Present
+        brief: "Job Title"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    company2:
+        company: "Company 2"
+        location: City
+        from: "October 2013"
+        to: "September 2014"
+        brief: "Job Title"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+publications:
+    paper1:
+        name: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        detail: "Conference on Lorem Ipsum"
+languages:
+    english:
+        name: English
+        level: Native
+    spanish:
+        name: Spanish
+        level: Basic
