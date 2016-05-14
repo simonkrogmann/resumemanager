@@ -25,6 +25,7 @@ public:
 
     void pushTag(const std::string& tag);
     bool next();
+    bool empty() const;
     std::string value(const std::string& tag) const;
 
     bool valid() const;

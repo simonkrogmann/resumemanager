@@ -146,6 +146,11 @@ bool Resume::next()
     return true;
 }
 
+bool Resume::empty() const
+{
+    return query() == nullptr;
+}
+
 std::string Resume::path() const
 {
     std::string result;

@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
 
     const auto templatePath = config.value("template");
 
-    std::cout << util::startsWith(templatePath, "builtin") << std::endl;
     const auto file = util::startsWith(templatePath, "builtin")
                           ? util::loadResource<resumemanager>(templatePath)
                           : util::File(templatePath);
@@ -51,11 +50,12 @@ int main(int argc, char* argv[])
         }
         return match;
     };
-    const auto collectUntil = [&](unsigned int& i, std::string tag) {
+    const auto collectUntil = [&](unsigned int& i, std::string tag,
+                                  bool spaces = false) {
         std::string collected = "";
         while (!isTag(i, tag))
         {
-            if (templateContent[i] != ' ')
+            if (templateContent[i] != ' ' || spaces)
                 collected += templateContent[i];
             ++i;
             // TODO: error message on end
@@ -72,8 +72,33 @@ int main(int argc, char* argv[])
             if (isTag(i, loopDelimiter))
             {
                 const auto name = collectUntil(i, loopDelimiter);
-                loops.push_back(i);
                 resume.pushTag(name);
+                if (resume.empty())
+                {
+                    // skip loop content
+                    auto counter = 1;
+                    while (counter > 0)
+                    {
+                        if (isTag(i, beginTag))
+                        {
+                            ++counter;
+                        }
+                        else if (isTag(i, endTag))
+                        {
+                            --counter;
+                        }
+                        else
+                        {
+                            ++i;
+                        }
+                    }
+                    resume.next();
+                }
+                else
+                {
+                    output << collectUntil(i, loopDelimiter, true);
+                    loops.push_back(i);
+                }
             }
             else
             {
