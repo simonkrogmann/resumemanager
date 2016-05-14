@@ -17,11 +17,11 @@ struct Loop
     unsigned int index = 0;
 };
 
-class Resume
+class TemplateData
 {
 public:
-    Resume(const util::File& database, const util::File& resume);
-    ~Resume();
+    TemplateData(const util::File& database, const util::File& TemplateData);
+    ~TemplateData();
 
     void pushTag(const std::string& tag);
     bool next();

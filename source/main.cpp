@@ -9,7 +9,7 @@
 #include <utilgpu/cpp/str.h>
 #include <utilgpu/qt/Config.h>
 
-#include "Resume.h"
+#include "TemplateData.h"
 
 int main(int argc, char* argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     });
     config.load(argc, argv);
 
-    Resume resume{config.value("database"), config.value("resume")};
+    TemplateData resume{config.value("database"), config.value("resume")};
     if (!resume.valid())
     {
         exit(1);
@@ -58,7 +58,12 @@ int main(int argc, char* argv[])
             if (templateContent[i] != ' ' || spaces)
                 collected += templateContent[i];
             ++i;
-            // TODO: error message on end
+            if (i >= templateContent.size())
+            {
+                std::cout << "Expected " << tag << " but reached end instead."
+                          << std::endl;
+                exit(6);
+            }
         }
         return collected;
     };
@@ -108,14 +113,21 @@ int main(int argc, char* argv[])
         }
         else if (isTag(i, endTag))
         {
+            auto split = isTag(i, loopDelimiter)
+                             ? collectUntil(i, loopDelimiter, true)
+                             : "";
             if (resume.next())
             {
                 i = loops.back();
+                output << split;
             }
             else
             {
-                assert(loops.size() > 0);
-                // TODO: error message
+                if (loops.size() == 0)
+                {
+                    std::cout << "Extra close tag found" << std::endl;
+                    exit(4);
+                }
                 loops.pop_back();
             }
         }
@@ -124,6 +136,11 @@ int main(int argc, char* argv[])
             output << templateContent[i];
             ++i;
         }
+    }
+    if (loops.size() != 0)
+    {
+        std::cout << "A loop wasn't closed." << std::endl;
+        exit(5);
     }
     util::File out{config.value("resume") + ".tex"};
     out.setContent(output.str());

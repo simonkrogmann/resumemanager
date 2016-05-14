@@ -1,4 +1,4 @@
-#include "Resume.h"
+#include "TemplateData.h"
 
 #include <algorithm>
 #include <iostream>
@@ -6,18 +6,19 @@
 #include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
 
-Resume::Resume(const util::File& database, const util::File& resume)
+TemplateData::TemplateData(const util::File& database,
+                           const util::File& TemplateData)
     : m_valid{true}
 {
     m_database = loadCFL(database);
-    m_resume = loadCFL(resume);
+    m_resume = loadCFL(TemplateData);
 }
 
-Resume::~Resume()
+TemplateData::~TemplateData()
 {
 }
 
-std::unique_ptr<util::CFLNode> Resume::loadCFL(util::File file)
+std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
 {
     if (!file.exists())
     {
@@ -79,7 +80,7 @@ std::string resolveIndex(const unsigned int& index,
     return source[index];
 }
 
-util::CFLNode* Resume::query(const std::string& tag) const
+util::CFLNode* TemplateData::query(const std::string& tag) const
 {
     auto target = m_database.get();
     auto alt_target = m_resume.get();
@@ -111,7 +112,7 @@ util::CFLNode* Resume::query(const std::string& tag) const
         }
         target = (*(*target)[loop.tag])[actual];
 
-        // advance in specific resume
+        // advance in specific TemplateData
         if (alt_target != nullptr && alt_target->children().size() > 0)
         {
             alt_target = (*alt_target)[actual];
@@ -128,13 +129,13 @@ util::CFLNode* Resume::query(const std::string& tag) const
     return (*target)[tag];
 }
 
-void Resume::pushTag(const std::string& tag)
+void TemplateData::pushTag(const std::string& tag)
 {
     // TODO check presence
     m_loops.push_back({tag});
 }
 
-bool Resume::next()
+bool TemplateData::next()
 {
     m_loops.back().index += 1;
     auto node = query();
@@ -146,12 +147,12 @@ bool Resume::next()
     return true;
 }
 
-bool Resume::empty() const
+bool TemplateData::empty() const
 {
     return query() == nullptr;
 }
 
-std::string Resume::path() const
+std::string TemplateData::path() const
 {
     std::string result;
     for (const auto& loop : m_loops)
@@ -161,7 +162,7 @@ std::string Resume::path() const
     return result;
 }
 
-std::string Resume::value(const std::string& tag) const
+std::string TemplateData::value(const std::string& tag) const
 {
     auto node = query(tag);
     if (node == nullptr || node->values().size() == 0)
@@ -172,7 +173,7 @@ std::string Resume::value(const std::string& tag) const
     return node->value();
 }
 
-bool Resume::valid() const
+bool TemplateData::valid() const
 {
     return m_valid;
 }
