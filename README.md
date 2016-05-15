@@ -1,4 +1,4 @@
-# resumemanager
+# resumemanager [![Build Status](https://travis-ci.org/simonkrogmann/resumemanager.svg?branch=master)](https://travis-ci.org/simonkrogmann/resumemanager)
 A tool for easier résumé management
 
 ## Usage
