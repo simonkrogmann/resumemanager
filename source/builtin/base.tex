@@ -19,6 +19,7 @@
 \newcommand{\heading}[1]{\section*{{\large \uppercase{\textbf{#1}}}}}
 \newcommand{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
 
+\newcommand{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
 
 \definecolor{dark}{RGB}{100, 100, 100}
 \newcommand{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[3pt]}
@@ -59,7 +60,7 @@
 
 <@ address @>\\
 <@ phone @>\\
-<@ mail @>\\
+\mail{<@ mail @>}\\
 \url{<@ github @>}\\
 
 <@| technologies | \heading{Skills} | <@ @>@>|, |
