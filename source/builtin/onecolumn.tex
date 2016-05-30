@@ -1,0 +1,77 @@
+\documentclass[a4paper,10pt]{scrartcl}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3.5cm]{geometry}
+\usepackage{tabularx}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{paracol}
+\usepackage[hidelinks, breaklinks=true]{hyperref}
+\hyperbaseurl{http://}
+\urlstyle{rm}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+
+\titlespacing\section{0pt}{20pt}{5pt}
+\titlespacing\subsection{0pt}{12pt}{2pt}
+
+\newcommand{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
+\newcommand{\heading}[1]{\section*{{\large \uppercase{\textbf{#1}}}}}
+\newcommand{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+
+\newcommand{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
+
+\definecolor{dark}{RGB}{100, 100, 100}
+\newcommand{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[3pt]}
+
+\setlength{\parindent}{0pt}
+\setlength{\columnsep}{0.6cm}
+
+\begin{document}
+\columnratio{0.62}
+\begin{paracol}{2}
+
+\name{<@ name @>}\\
+<@ description @>
+
+\switchcolumn
+<@ address @>\\
+<@ phone @>\\
+\mail{<@ mail @>}\\
+\url{<@ github @>}
+\end{paracol}
+
+<@| jobs | \heading{Experience} |
+    \subheading{<@ company @>}{<@ location @>}{<@ brief @>}
+    \timeperiod{<@ from @> - <@ to @>}
+    <@ description @>
+@>
+
+<@| education | \heading{Education} |
+    \subheading{<@ name@>}{<@ location @>}{<@ degree @>}
+    \timeperiod{<@ from @> - <@ to @>}
+    <@ description @>
+@>
+
+<@| projects | \heading{Projects} |
+    \subheading{<@ name@>}{}{<@ brief @>}
+    <@ description @>
+@>
+
+<@| publications | \heading{Publications} |
+    \subheading{<@ name@>}{}{<@ detail @>}
+    \vspace{15pt}
+@>
+
+<@| awards | \heading{Awards} |
+    \subheading{<@ name@>}{}{<@ detail @>}
+    \vspace{15pt}
+@>
+
+<@| technologies | \heading{Skills} | <@ @>@>|, |
+
+<@| languages | \heading{Languages} |
+    <@ name @>: <@ level @>
+@>
+
+\end{document}

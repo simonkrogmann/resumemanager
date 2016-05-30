@@ -13,6 +13,7 @@ set(includes
 
 set(resources
     builtin/base.tex
+    builtin/onecolumn.tex
 )
 
 set(libraries
