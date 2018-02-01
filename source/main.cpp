@@ -15,7 +15,9 @@ int main(int argc, char* argv[])
     std::string applicationName = "build-resume";
     util::Config config{"simonkrogmann", applicationName};
     config.setDefaults({
-        {"database", ""}, {"resume", ""}, {"template", "builtin/base.tex"},
+        {"database", ""},
+        {"resume", ""},
+        {"template", "builtin/base.tex"},
     });
     config.load(argc, argv);
 

@@ -14,9 +14,7 @@ TemplateData::TemplateData(const util::File& database,
     m_resume = loadCFL(specific);
 }
 
-TemplateData::~TemplateData()
-{
-}
+TemplateData::~TemplateData() {}
 
 std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
 {

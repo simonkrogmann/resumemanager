@@ -15,9 +15,7 @@ Template::Template(TemplateData* data, const util::File& templateFile)
     m_templateContent = templateFile.content();
 }
 
-Template::~Template()
-{
-}
+Template::~Template() {}
 
 bool Template::matchTag(const std::string& tag)
 {
