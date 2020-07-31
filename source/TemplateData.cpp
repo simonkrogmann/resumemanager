@@ -122,8 +122,7 @@ util::CFLNode* TemplateData::query(const std::string& tag) const
         }
     }
 
-    if (tag == "")
-        return target;
+    if (tag == "") return target;
 
     return (*target)[tag];
 }

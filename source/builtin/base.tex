@@ -1,7 +1,7 @@
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2.3cm, top=2.6cm, bottom=2cm]{geometry}
+\usepackage[margin=2.3cm, top=2.6cm, bottom=3cm]{geometry}
 \usepackage{tabularx}
 \usepackage{color}
 \usepackage{setspace}
@@ -11,28 +11,37 @@
 \usepackage[hidelinks, breaklinks=true]{hyperref}
 \hyperbaseurl{http://}
 \urlstyle{same}
-\usepackage[T1]{fontenc}
-\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 
-\titlespacing\section{0pt}{13pt}{5pt}
-\titlespacing\subsection{0pt}{5pt}{1pt}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=\baselineskip,
+  afterskip=.2\baselineskip]{section}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=1.0\baselineskip,
+  afterskip=.1\baselineskip]{subsection}
 
+\newcommand*{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
+\newcommand*{\heading}[1]{\section*{{\large\textbf{\underline{#1}}}}}
+\newcommand*{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
 
-\newcommand{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
-\newcommand{\heading}[1]{\section*{{\large \uppercase{\textbf{#1}}}}}
-\newcommand{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+\newcommand*{\optional}[1]{\Ifstr{#1}{-}{}{#1}}
 
-\newcommand{\optional}[1]{\ifstr{#1}{-}{}{#1}}
-
-\newcommand{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
+\newcommand*{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
 
 \definecolor{dark}{RGB}{100, 100, 100}
-\newcommand{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[2pt]}
+\newcommand*{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[2pt]}
 
 \setlength{\parindent}{0pt}
 \setlength{\columnsep}{1cm}
 
-\pagenumbering{gobble}
+\rfoot{\thepage\ of \pageref*{LastPage}}
+\cfoot{}
 
 \begin{document}
 \columnratio{0.7}
@@ -60,6 +69,10 @@
 
 <@| publications | \heading{Publications} |
     \subheading{<@ name@>}{}{<@ detail @>}
+@>
+
+<@| teaching-assistant | \heading{Teaching (as TA)} |
+    \subheading{<@ brief @>}{<@ term @>}{<@ university @>}
 @>
 
 \switchcolumn

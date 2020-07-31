@@ -1,31 +1,48 @@
 \documentclass[a4paper,10pt]{scrartcl}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[margin=2.4cm, top=2.6cm, bottom=3cm]{geometry}
 \usepackage{tabularx}
 \usepackage{color}
 \usepackage{setspace}
 \usepackage{paracol}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
 \usepackage[hidelinks, breaklinks=true]{hyperref}
 \hyperbaseurl{http://}
-\urlstyle{rm}
-\usepackage[T1]{fontenc}
-\usepackage{titlesec}
+\urlstyle{same}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
 
-\titlespacing\section{0pt}{15pt}{5pt}
-\titlespacing\subsection{0pt}{8pt}{2pt}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=1.0\baselineskip,
+  afterskip=.2\baselineskip]{section}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=1.0\baselineskip,
+  afterskip=.1\baselineskip]{subsection}
 
-\newcommand{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
-\newcommand{\heading}[1]{\section*{{\large \uppercase{\textbf{#1}}}}}
-\newcommand{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+\newcommand*{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
+\newcommand*{\heading}[1]{\section*{{\large\textbf{#1}}}\vspace*{-8pt}\rule{\textwidth}{1pt}\vspace*{-7pt}}
+\newcommand*{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
 
-\newcommand{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
+\newcommand*{\optional}[1]{\Ifstr{#1}{-}{}{#1}}
+
+\newcommand*{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
 
 \definecolor{dark}{RGB}{100, 100, 100}
-\newcommand{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[3pt]}
+\newcommand*{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[2pt]}
 
 \setlength{\parindent}{0pt}
-\setlength{\columnsep}{0.6cm}
+\setlength{\columnsep}{1cm}
+
+\rfoot{\thepage\ of \pageref*{LastPage}}
+\cfoot{}
 
 \begin{document}
 \columnratio{0.62}
@@ -53,25 +70,32 @@
     <@ description @>
 @>
 
+<@| publications | \heading{Publications} |
+    \subheading{<@ name@>}{}{<@ detail @>}
+    \vspace{2pt}
+@>
+\vspace{15pt}
+
 <@| projects | \heading{Projects} |
     \subheading{<@ name@>}{}{<@ brief @>}
     <@ description @>
 @>
 
-<@| publications | \heading{Publications} |
-    \subheading{\textnormal{<@ name@>}}{}{<@ detail @>}
-    \vspace{15pt}
+<@| teaching-assistant | \heading{Teaching (as TA)} |
+    \subheading{<@ brief @>}{<@ term @>}{<@ university @>}
+    \vspace{2pt}
 @>
+\vspace{15pt}
 
 <@| awards | \heading{Awards} |
-    \subheading{\textnormal{<@ name@>}}{}{<@ detail @>}
-    \vspace{7pt}
+    \subheading{<@ name@>}{}{<@ detail @>}
+    \vspace{2pt}
 @>
 \vspace{8pt}
 
-<@| technologies | \heading{Skills} | <@ @>@>|, |
+<@| technologies | \heading{Skills}\vspace{12pt} | <@ @>@>|, |
 
-<@| languages | \heading{Languages} |
+<@| languages | \heading{Languages}\vspace{12pt} |
     <@ name @>: <@ level @>
 @>
 
