@@ -20,7 +20,8 @@ std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
 {
     if (!file.exists())
     {
-        std::cout << file.path << " does not exist." << std::endl;
+        std::cout << "Template file '" << file.path << "' does not exist."
+                  << std::endl;
         m_valid = false;
         return nullptr;
     }

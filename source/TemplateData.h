@@ -9,7 +9,7 @@ namespace util
 {
 class File;
 class CFLNode;
-}
+}  // namespace util
 
 struct Loop
 {
