@@ -48,7 +48,7 @@
 
 \newcommand*{\mail}[1]{\mbox{\href{mailto:#1}{\nolinkurl{#1}}}}
 
-\definecolor{dark}{RGB}{100, 100, 100}
+\definecolor{dark}{RGB}{140, 140, 140}
 \newcommand*{\timeperiod}[1]{{\small \textcolor{dark}{#1}}\\[2pt]}
 
 \setlength{\parindent}{0pt}
@@ -82,22 +82,23 @@
 \pagebreak[1]
 
 <@| education | \heading{Education} |
-    \subheading{<@ institution@>}{<@ location @>}{<@ degree @>}
+    \subheading{<@ institution @>}{<@ location @>}{<@ degree @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
 @>|\pagebreak[0]|
 
 \pagebreak[1]
 
-<@| publications | \heading{Publications} |
-    \subheading{<@ name@>}{}{}
-    <@ detail @>
+<@| publications | \heading{Publications \normalfont \small {\textcolor{dark} { - according to \href{https://portal.core.edu.au/conf-ranks/}{CORE ranking}}}}|
+    \subheading{<@ name @>}{}{}
+    <@ detail @> \ifx$<@ ranking @>$\else{\small \textcolor{dark} { - ranked <@ ranking @>}}\fi
 @>|\pagebreak[0]|
 
 \pagebreak[1]
 
 <@| projects | \heading{Projects} |
-    \subheading{<@ name@>}{<@ time @>}{<@ brief @>}
+    \subheading{<@ name @>}{<@ brief @>}{}
+    \timeperiod{<@ time @>}
     <@ description @>
 @>|\pagebreak[0]|
 
@@ -118,14 +119,14 @@
 \vspace{1.2\baselineskip}
 
 <@| awards | \heading{Awards} |
-    \subheading{<@ name@>}{}{}
+    \subheading{<@ name @>}{}{}
     <@ detail @>
 @>|\pagebreak[0]|
 
 \pagebreak[1]
 
 <@| extracurricular | \heading{Other Activities} |
-    \subheading{<@ name@>}{<@ detail @>}{}
+    \subheading{<@ name @>}{<@ detail @>}{}
     \timeperiod{<@ from @> - <@ to @>}
     \nopagebreak
     <@ description @>
