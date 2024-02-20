@@ -8,8 +8,9 @@
 \usepackage{paracol}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
+\PassOptionsToPackage{hyphens}{url}
 \usepackage[hidelinks, breaklinks=true]{hyperref}
-\hyperbaseurl{http://}
+\hyperbaseurl{https://}
 \urlstyle{same}
 \usepackage{lastpage}
 \usepackage{fancyhdr}
@@ -20,16 +21,28 @@
   %runin=false,
   afterindent=false,
   beforeskip=1.0\baselineskip,
-  afterskip=.2\baselineskip]{section}
+  afterskip=.5\baselineskip]{section}
 \RedeclareSectionCommand[
   %runin=false,
   afterindent=false,
-  beforeskip=1.0\baselineskip,
+  beforeskip=0.5\baselineskip,
   afterskip=.1\baselineskip]{subsection}
 
+\makeatletter
+\renewcommand{\sectionlinesformat}[4]{%
+\ifstr{#1}{section}{%
+    \parbox[t]{\linewidth}{%
+      \raggedsection\@hangfrom{\hskip #2#3}{#4}\par%
+      \kern-1\ht\strutbox\rule{\linewidth}{.8pt}%
+    }%
+  }{%
+    \@hangfrom{\hskip #2#3}{#4}}% 
+}
+\makeatother
+
 \newcommand*{\name}[1]{{\textbf{{\fontsize{36.4}{36.4}\selectfont #1}}}}
-\newcommand*{\heading}[1]{\section*{{\normalsize\textbf{#1}}}\vspace*{-10pt}\rule{\textwidth}{1pt}\vspace*{-7pt}}
-\newcommand*{\subheading}[3]{\subsection*{{\normalsize #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+\newcommand*{\heading}[1]{\section*{\normalsize\textbf{#1}}}
+\newcommand*{\subheading}[3]{\subsection*{{\normalsize #1\textnormal{, #2\ifx&#3&\else\ - \textit{#3}\fi}}}}
 
 \newcommand*{\optional}[1]{\Ifstr{#1}{-}{}{#1}}
 
@@ -48,80 +61,81 @@
 \columnratio{0.7}
 \begin{paracol}{2}
 
-\name{<@ name @>}\\
+\name{<@ name @>}\\[5pt]
 <@ description @>
 
 \switchcolumn
 <@ address @>\\
 <@ phone @>\\
 \mail{<@ mail @>}\\
-\url{<@ github @>}
+\url{<@ github @>}\\
+\url{<@ webpage @>}
+\vspace{-1.5em}
 \end{paracol}
 
 <@| jobs | \heading{Experience} |
-    \subheading{<@ company @>}{<@ location @>}{<@ brief @>}
+    \subheading{<@ institution @>}{<@ location @>}{<@ brief @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
-@>
+@>|\pagebreak[0]|
+
+\pagebreak[1]
 
 <@| education | \heading{Education} |
-    \subheading{<@ name@>}{<@ location @>}{<@ degree @>}
+    \subheading{<@ institution@>}{<@ location @>}{<@ degree @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
-@>
+@>|\pagebreak[0]|
+
+\pagebreak[1]
 
 <@| publications | \heading{Publications} |
-    \subheading{<@ name@>}{}{<@ detail @>}
-    \vspace{2pt}
-    \pagebreak[0]
+    \subheading{<@ name@>}{}{}
+    <@ detail @>
+@>|\pagebreak[0]|
 
-@>
-\vspace{10pt}
+\pagebreak[1]
 
 <@| projects | \heading{Projects} |
     \subheading{<@ name@>}{<@ time @>}{<@ brief @>}
     <@ description @>
-    \pagebreak[0]
+@>|\pagebreak[0]|
 
-@>
+\pagebreak[1]
 
 <@| supervision | \heading{Co-Supervised Theses} |
-    \subheading{<@ name @>}{<@ title @>}{<@ level @>}
-    \vspace{2pt}
-    \pagebreak[0]
+    \subheading{<@ name @> (<@ level @>)}{<@ title @>}{}
+@>|\pagebreak[0]|
 
-@>
-\vspace{10pt}
+\pagebreak[1]
+\vspace{1.2\baselineskip}
 
 <@| teaching-assistant | \heading{Teaching (as TA)} |
-    \subheading{<@ brief @>}{<@ term @>}{<@ university @>}
-    \vspace{2pt}
-    \pagebreak[0]
+    \subheading{<@ brief @>}{<@ term @>}{}
+@>|\pagebreak[0]|
 
-@>
-\vspace{10pt}
+\pagebreak[1]
+\vspace{1.2\baselineskip}
 
 <@| awards | \heading{Awards} |
-    \subheading{<@ name@>}{}{<@ detail @>}
-    \vspace{2pt}
-    \pagebreak[0]
+    \subheading{<@ name@>}{}{}
+    <@ detail @>
+@>|\pagebreak[0]|
 
-@>
-\vspace{10pt}
+\pagebreak[1]
 
 <@| extracurricular | \heading{Other Activities} |
-    \subheading{<@ name@>}{}{<@ detail @>}
+    \subheading{<@ name@>}{<@ detail @>}{}
     \timeperiod{<@ from @> - <@ to @>}
     \nopagebreak
     <@ description @>
-    \pagebreak[0]
+@>|\pagebreak[0]|
 
-@>
-\vspace{10pt}
+\pagebreak[1]
 
-<@| technologies | \heading{Skills}\vspace{12pt} | <@ @>@>|, |
+<@| technologies | \heading{Skills} | <@ @>@>|, |
 
-<@| languages | \heading{Languages}\vspace{12pt} |
+<@| languages | \heading{Languages} |
     <@ name @>: <@ level @>
 @>
 

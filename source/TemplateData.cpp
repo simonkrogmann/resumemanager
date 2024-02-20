@@ -136,7 +136,7 @@ void TemplateData::pushTag(const std::string& tag)
 bool TemplateData::next()
 {
     m_loops.back().index += 1;
-    auto node = query();
+    const auto* node = query();
     if (node == nullptr)
     {
         assert(m_loops.size() > 0);

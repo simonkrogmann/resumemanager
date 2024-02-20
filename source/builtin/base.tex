@@ -28,7 +28,7 @@
 
 \newcommand*{\name}[1]{{\textbf{{\fontsize{30}{30}\selectfont #1}}}}
 \newcommand*{\heading}[1]{\section*{{\large\textbf{\underline{#1}}}}}
-\newcommand*{\subheading}[3]{\subsection*{{\large #1\textnormal{\ifx&#2&\else, \fi #2 - \textit{#3}}}}}
+\newcommand*{\subheading}[3]{\subsection*{{\normalsize #1\textnormal{\ifx&#2&\else, \fi #2\ifx&3&- \textit{#3}\else\fi}}}}
 
 \newcommand*{\optional}[1]{\Ifstr{#1}{-}{}{#1}}
 
@@ -51,13 +51,13 @@
 <@ description @>
 
 <@| jobs | \heading{Experience} |
-    \subheading{<@ company @>}{<@ location @>}{<@ brief @>}
+    \subheading{<@ institution @>}{<@ location @>}{<@ brief @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
 @>
 
 <@| education | \heading{Education} |
-    \subheading{<@ name @>}{<@ location @>}{<@ degree @>}
+    \subheading{<@ institution @>}{<@ location @>}{<@ degree @>}
     \timeperiod{<@ from @> - <@ to @>}
     \optional{<@ description @>}
 @>
@@ -68,7 +68,7 @@
 @>
 
 <@| publications | \heading{Publications} |
-    \subheading{<@ name@>}{}{<@ detail @>}
+    \subheading{<@ name@>}{\\<@ detail @>}{}
 @>
 
 <@| teaching-assistant | \heading{Teaching (as TA)} |
