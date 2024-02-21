@@ -1,5 +1,6 @@
 template: builtin/base.tex
-projects-important:
-    project3
-projects-remove:
-    project2
+projects:
+    important:
+        project3
+    remove:
+        project2
