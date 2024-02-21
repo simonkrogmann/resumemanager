@@ -1,23 +1,35 @@
-#include "Template.h"
+#include "CVCreator.h"
 
 #include <algorithm>
 #include <cassert>
 #include <iostream>
 
 #include <utilgpu/cpp/file.h>
+#include <utilgpu/cpp/resource.h>
+#include <utilgpu/cpp/str.h>
 
-#include "TemplateData.h"
+#include "CVData.h"
 
-Template::Template(TemplateData* data, const util::File& templateFile)
-    : m_data{data}, m_templateContent{}
+CVCreator::CVCreator(CVData* data) : m_data{data}, m_templateContent{}
 {
-    assert(templateFile.exists());
-    m_templateContent = templateFile.content();
+    auto templatePath = m_data->value("template");
+
+    const auto file = util::startsWith(templatePath, "builtin")
+                          ? util::loadResource<resumemanager>(templatePath)
+                          : util::File(templatePath);
+    assert(file.exists());
+    if (!file.exists())
+    {
+        std::cerr << "Input file '" << file.path << "' does not exist."
+                  << std::endl;
+        exit(2);
+    }
+    m_templateContent = file.content();
 }
 
-Template::~Template() {}
+CVCreator::~CVCreator() {}
 
-bool Template::matchTag(const std::string& tag)
+bool CVCreator::matchTag(const std::string& tag)
 {
     auto match = m_templateContent.substr(m_position, tag.size()) == tag;
     if (match)
@@ -27,9 +39,9 @@ bool Template::matchTag(const std::string& tag)
     return match;
 }
 
-std::string Template::collectToMatchingTag(const std::string& end,
-                                           const std::string& begin,
-                                           const bool& spaces)
+std::string CVCreator::collectToMatchingTag(const std::string& end,
+                                            const std::string& begin,
+                                            const bool& spaces)
 {
     std::string collected = "";
     auto counter = 1;
@@ -37,7 +49,7 @@ std::string Template::collectToMatchingTag(const std::string& end,
     {
         if (m_position >= m_templateContent.size())
         {
-            std::cout << "Expected " << end << " but reached end instead."
+            std::cerr << "Expected " << end << " but reached end instead."
                       << std::endl;
             exit(6);
         }
@@ -58,7 +70,7 @@ std::string Template::collectToMatchingTag(const std::string& end,
     }
     return collected;
 }
-bool Template::parse()
+bool CVCreator::parse()
 {
     while (m_position < m_templateContent.size())
     {
@@ -87,7 +99,7 @@ bool Template::parse()
     return true;
 }
 
-void Template::parseLoop()
+void CVCreator::parseLoop()
 {
     const auto name = collectToMatchingTag(loopDelimiter, "", false);
     m_data->pushTag(name);
@@ -109,7 +121,7 @@ void Template::parseLoop()
         m_position = loopBegin;
         if (parse())
         {
-            std::cout << "Extra close tag found" << std::endl;
+            std::cerr << "Extra close tag found" << std::endl;
             exit(4);
         }
         std::string split = "";
@@ -125,12 +137,12 @@ void Template::parseLoop()
     }
 }
 
-std::string Template::result()
+std::string CVCreator::result()
 {
     parse();
     if (m_position != m_templateContent.size())
     {
-        std::cout << "Extra close tag found" << std::endl;
+        std::cerr << "Extra close tag found" << std::endl;
         exit(4);
     }
     return m_output.str();

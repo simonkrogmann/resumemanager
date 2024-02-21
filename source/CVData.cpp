@@ -1,13 +1,13 @@
-#include "TemplateData.h"
+#include "CVData.h"
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 
 #include <utilgpu/cpp/cfl.h>
 #include <utilgpu/cpp/file.h>
 
-TemplateData::TemplateData(const util::File& database,
-                           const util::File& specific)
+CVData::CVData(const util::File& database, const util::File& specific)
     : m_valid{true}
 {
     m_database = loadCFL(database);
@@ -15,9 +15,9 @@ TemplateData::TemplateData(const util::File& database,
     m_stack.push_back({m_database.get(), m_resume.get()});
 }
 
-TemplateData::~TemplateData() {}
+CVData::~CVData() {}
 
-std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
+std::unique_ptr<util::CFLNode> CVData::loadCFL(util::File file)
 {
     if (!file.exists())
     {
@@ -82,7 +82,7 @@ void resolve(Loop& loop)
     assert(!(order.size() > 0 && node == nullptr));
 }
 
-IterationMode TemplateData::getIterationMode() const
+IterationMode CVData::getIterationMode() const
 {
     auto& [node, alt_node, _, _2] = m_stack.back();
     if (m_stack.size() == 1)
@@ -104,7 +104,7 @@ IterationMode TemplateData::getIterationMode() const
     return IterationMode::Children;
 }
 
-void TemplateData::pushTag(const std::string& tag)
+void CVData::pushTag(const std::string& tag)
 {
     assert(!m_stack.empty());
     auto& [node, alt_node, _, _2] = m_stack.back();
@@ -114,7 +114,7 @@ void TemplateData::pushTag(const std::string& tag)
     resolve(m_stack.back());
 }
 
-bool TemplateData::advance()
+bool CVData::advance()
 {
     assert(getIterationMode() != IterationMode::None);
     m_stack.back().index += 1;
@@ -126,7 +126,7 @@ bool TemplateData::advance()
     return true;
 }
 
-bool TemplateData::hasNext() const
+bool CVData::hasNext() const
 {
     auto mode = getIterationMode();
     assert(mode != IterationMode::None);
@@ -141,7 +141,7 @@ bool TemplateData::hasNext() const
     return index < count;
 }
 
-std::string TemplateData::path() const
+std::string CVData::path() const
 {
     std::string result;
     for (const auto& loop : m_stack)
@@ -157,7 +157,7 @@ void queryError(const std::string& path)
     exit(1);
 }
 
-std::string TemplateData::value(const std::string& tag) const
+std::string CVData::value(const std::string& tag) const
 {
     auto mode = getIterationMode();
     auto& [node, alt_node, index, order] = m_stack.back();
@@ -171,6 +171,11 @@ std::string TemplateData::value(const std::string& tag) const
     }
     else if (mode == IterationMode::None)
     {
+        if (alt_node != nullptr)
+        {
+            auto ret = (*alt_node)[tag];
+            if (ret != nullptr) return ret->value();
+        }
         auto ret = (*node)[tag];
         if (ret == nullptr) queryError(path() + tag);
         return ret->value();
@@ -185,7 +190,7 @@ std::string TemplateData::value(const std::string& tag) const
     assert(false);
 }
 
-bool TemplateData::valid() const
+bool CVData::valid() const
 {
     return m_valid;
 }

@@ -8,13 +8,13 @@ namespace util
 class File;
 }
 
-class TemplateData;
+class CVData;
 
-class Template
+class CVCreator
 {
 public:
-    Template(TemplateData* data, const util::File& templateFile);
-    ~Template();
+    CVCreator(CVData* data);
+    ~CVCreator();
 
     std::string result();
 
@@ -31,7 +31,7 @@ private:
     bool parse();
     void parseLoop();
 
-    TemplateData* m_data;
+    CVData* m_data;
     std::string m_templateContent;
     unsigned int m_position = 0;
     std::stringstream m_output;

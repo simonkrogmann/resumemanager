@@ -1,3 +1,4 @@
+template: builtin/base.tex
 projects-important:
     project3
 projects-remove:

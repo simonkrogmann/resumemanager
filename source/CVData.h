@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,11 +26,11 @@ enum class IterationMode
     Children
 };
 
-class TemplateData
+class CVData
 {
 public:
-    TemplateData(const util::File& database, const util::File& specific);
-    ~TemplateData();
+    CVData(const util::File& database, const util::File& specific);
+    ~CVData();
 
     void pushTag(const std::string& tag);
     bool advance();

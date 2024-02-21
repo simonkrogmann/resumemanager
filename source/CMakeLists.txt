@@ -2,13 +2,13 @@ set(target build-resume)
 
 set(sources
     main.cpp
-    TemplateData.cpp
-    Template.cpp
+    CVData.cpp
+    CVCreator.cpp
 )
 
 set(includes
-    TemplateData.h
-    Template.h
+    CVData.h
+    CVCreator.h
 )
 
 set(resources
@@ -17,7 +17,7 @@ set(resources
 )
 
 set(libraries
-    utilgpu::cpp utilgpu::qt
+    utilgpu::cpp
 )
 
 create_executable(${project} ${target} "${sources}" "${includes}" "${libraries}")
