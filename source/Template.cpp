@@ -93,9 +93,13 @@ void Template::parseLoop()
     m_data->pushTag(name);
     if (m_data->empty())
     {
-        // skip loop content
+        // skip section entirely
         collectToMatchingTag(endTag, beginTag);
         m_data->next();
+        if (matchTag(loopDelimiter))
+        {
+            collectToMatchingTag(loopDelimiter);
+        }
         return;
     }
     m_output << collectToMatchingTag(loopDelimiter);
