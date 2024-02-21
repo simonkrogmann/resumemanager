@@ -68,8 +68,8 @@
 <@ address @>\\
 <@ phone @>\\
 \mail{<@ mail @>}\\
-\url{<@ github @>}\\
-\url{<@ webpage @>}
+\href{https://<@ github @>}{<@ github @>}\\
+\href{https://<@ webpage @>}{<@ webpage @>}
 \vspace{-1.5em}
 \end{paracol}
 
@@ -89,7 +89,7 @@
 
 \pagebreak[1]
 
-<@| publications | \heading{Publications \normalfont \small {\textcolor{dark} { - according to \href{https://portal.core.edu.au/conf-ranks/}{CORE ranking}}}}|
+<@| publications | \heading{Publications \hfill {\normalfont \small \textcolor{dark} { according to \href{https://portal.core.edu.au/conf-ranks/}{CORE ranking}}}}|
     \subheading{<@ name @>}{}{}
     <@ detail @> \ifx$<@ ranking @>$\else{\small \textcolor{dark} { - ranked <@ ranking @>}}\fi
 @>|\pagebreak[0]|
@@ -119,11 +119,11 @@
 \vspace{1.2\baselineskip}
 
 <@| awards | \heading{Awards} |
-    \subheading{<@ name @>}{}{}
-    <@ detail @>
+    \subheading{<@ name @>}{<@ detail @>}{}
 @>|\pagebreak[0]|
 
 \pagebreak[1]
+\vspace{1.2\baselineskip}
 
 <@| extracurricular | \heading{Other Activities} |
     \subheading{<@ name @>}{<@ detail @>}{}
