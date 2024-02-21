@@ -12,6 +12,7 @@ TemplateData::TemplateData(const util::File& database,
 {
     m_database = loadCFL(database);
     m_resume = loadCFL(specific);
+    m_stack.push_back({m_database.get(), m_resume.get()});
 }
 
 TemplateData::~TemplateData() {}
@@ -20,7 +21,7 @@ std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
 {
     if (!file.exists())
     {
-        std::cout << "Template file '" << file.path << "' does not exist."
+        std::cerr << "Template file '" << file.path << "' does not exist."
                   << std::endl;
         m_valid = false;
         return nullptr;
@@ -28,148 +29,160 @@ std::unique_ptr<util::CFLNode> TemplateData::loadCFL(util::File file)
     auto database = util::parseCFL(file.path);
     if (!database->valid())
     {
-        std::cout << "Error in " << file.path << std::endl;
-        std::cout << database->message() << std::endl;
+        std::cerr << "Error in " << file.path << std::endl;
+        std::cerr << database->message() << std::endl;
         m_valid = false;
     }
     return database;
 }
 
-std::string resolveIndex(const unsigned int& index,
-                         const std::vector<std::string>& source,
-                         const std::vector<std::string>& alternative,
-                         const std::vector<std::string>& important,
-                         const std::vector<std::string>& remove)
+// Moves important nodes to beginning and removes unimportant node
+// but not in actual data, only in the vector 'order'
+void resolve(Loop& loop)
 {
-    auto isElement = [](auto element, auto vector) {
-        return std::find(vector.begin(), vector.end(), element) != vector.end();
-    };
-    if (alternative.size() > 0)
+    auto& [node, alt_node, _, order] = loop;
+    if (node != nullptr)
     {
-        if (alternative.size() <= index)
-        {
-            return "";
-        }
-        return alternative[index];
+        std::ranges::transform(node->children(), std::back_inserter(order),
+                               [](const auto& x) { return x->name(); });
     }
-    if (important.size() > 0 || remove.size() > 0)
+    if (alt_node == nullptr) return;
+    auto result = alt_node->values();
+    if (result.empty())
     {
-        if (index < important.size())
+        auto important = (*alt_node)["important"];
+        auto remove = (*alt_node)["remove"];
+        std::vector<std::string> skip;
+        if (important != nullptr)
         {
-            return important[index];
+            result = important->values();
+            skip = important->values();
         }
-        auto actualIndex = important.size();
-        for (const auto& el : source)
+        if (remove != nullptr)
         {
-            if (!isElement(el, important) && !isElement(el, remove))
-            {
-                ++actualIndex;
-            }
-            if (actualIndex > index)
-            {
-                return el;
-            }
+            const auto& val = remove->values();
+            skip.insert(skip.end(), val.begin(), val.end());
         }
-        return "";
+        std::ranges::copy_if(
+            order, std::back_inserter(result),
+            [&](const auto& x)
+            { return std::ranges::find(skip, x) == skip.end(); });
     }
-    if (source.size() <= index)
+
+    for (const auto& v : result)
     {
-        return "";
+        if (std::ranges::find(order, v) == order.end())
+        {
+            std::cerr << "'" << v << "' from resume is not in database"
+                      << std::endl;
+            exit(5);
+        }
     }
-    return source[index];
+    order = result;
+    assert(!(order.size() > 0 && node == nullptr));
 }
 
-util::CFLNode* TemplateData::query(const std::string& tag) const
+IterationMode TemplateData::getIterationMode() const
 {
-    auto target = m_database.get();
-    auto alt_target = m_resume.get();
-    for (const auto& loop : m_loops)
+    auto& [node, alt_node, _, _2] = m_stack.back();
+    if (m_stack.size() == 1)
     {
-        std::vector<std::string> source;
-        std::vector<std::string> important;
-        std::vector<std::string> remove;
-        std::vector<std::string> alternative;
-        for (const auto& candidate : (*target)[loop.tag]->children())
-        {
-            source.push_back(candidate->name());
-        }
-
-        if (alt_target != nullptr)
-        {
-            important = (*alt_target)[loop.tag + "-important"]->values();
-            remove = (*alt_target)[loop.tag + "-remove"]->values();
-            alt_target = (*alt_target)[loop.tag];
-            alternative = alt_target->values();
-        }
-
-        const auto actual =
-            resolveIndex(loop.index, source, alternative, important, remove);
-
-        if (actual == "")
-        {
-            return nullptr;
-        }
-        target = (*(*target)[loop.tag])[actual];
-
-        // advance in specific data
-        if (alt_target != nullptr && alt_target->children().size() > 0)
-        {
-            alt_target = (*alt_target)[actual];
-        }
-        else
-        {
-            alt_target = nullptr;
-        }
+        return IterationMode::None;
     }
-
-    if (tag == "") return target;
-
-    return (*target)[tag];
+    if (node != nullptr && !node->children().empty())
+    {
+        return IterationMode::Children;
+    }
+    if (alt_node != nullptr && !alt_node->values().empty())
+    {
+        return IterationMode::AltValues;
+    }
+    if (node != nullptr && !node->values().empty())
+    {
+        return IterationMode::NormalValues;
+    }
+    return IterationMode::Children;
 }
 
 void TemplateData::pushTag(const std::string& tag)
 {
-    // TODO check presence
-    m_loops.push_back({tag});
+    assert(!m_stack.empty());
+    auto& [node, alt_node, _, _2] = m_stack.back();
+    auto new_node = (*node)[tag];
+    auto new_alt = (alt_node == nullptr) ? nullptr : (*alt_node)[tag];
+    m_stack.push_back({new_node, new_alt});
+    resolve(m_stack.back());
 }
 
-bool TemplateData::next()
+bool TemplateData::advance()
 {
-    m_loops.back().index += 1;
-    const auto* node = query();
-    if (node == nullptr)
+    assert(getIterationMode() != IterationMode::None);
+    m_stack.back().index += 1;
+    if (!hasNext())
     {
-        assert(m_loops.size() > 0);
-        m_loops.pop_back();
+        m_stack.pop_back();
         return false;
     }
     return true;
 }
 
-bool TemplateData::empty() const
+bool TemplateData::hasNext() const
 {
-    return query() == nullptr;
+    auto mode = getIterationMode();
+    assert(mode != IterationMode::None);
+    auto& [node, alt, index, order] = m_stack.back();
+    int count = 0;
+    if (mode == IterationMode::Children)
+        count = order.size();
+    else if (mode == IterationMode::NormalValues)
+        count = node->values().size();
+    else if (mode == IterationMode::AltValues)
+        count = alt->values().size();
+    return index < count;
 }
 
 std::string TemplateData::path() const
 {
     std::string result;
-    for (const auto& loop : m_loops)
+    for (const auto& loop : m_stack)
     {
-        result += loop.tag + " -> ";
+        result += (loop.node == nullptr) ? "0" : loop.node->name() + " -> ";
     }
     return result;
 }
 
+void queryError(const std::string& path)
+{
+    std::cerr << path << " does not exist." << std::endl;
+    exit(1);
+}
+
 std::string TemplateData::value(const std::string& tag) const
 {
-    auto node = query(tag);
-    if (node == nullptr || node->values().size() == 0)
+    auto mode = getIterationMode();
+    auto& [node, alt_node, index, order] = m_stack.back();
+    if (mode == IterationMode::AltValues)
     {
-        std::cout << path() << tag << " does not exist." << std::endl;
-        exit(1);
+        return alt_node->values()[index];
     }
-    return node->value();
+    else if (mode == IterationMode::NormalValues)
+    {
+        return node->values()[index];
+    }
+    else if (mode == IterationMode::None)
+    {
+        auto ret = (*node)[tag];
+        if (ret == nullptr) queryError(path() + tag);
+        return ret->value();
+    }
+    else if (mode == IterationMode::Children)
+    {
+        if (node == nullptr) queryError(path() + tag);
+        auto ret = (*(*node)[order[index]])[tag];
+        if (ret == nullptr) queryError(path() + tag);
+        return ret->value();
+    }
+    assert(false);
 }
 
 bool TemplateData::valid() const

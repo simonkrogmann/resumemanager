@@ -91,11 +91,11 @@ void Template::parseLoop()
 {
     const auto name = collectToMatchingTag(loopDelimiter, "", false);
     m_data->pushTag(name);
-    if (m_data->empty())
+    if (!m_data->hasNext())
     {
         // skip section entirely
         collectToMatchingTag(endTag, beginTag);
-        m_data->next();
+        m_data->advance();
         if (matchTag(loopDelimiter))
         {
             collectToMatchingTag(loopDelimiter);
@@ -117,7 +117,7 @@ void Template::parseLoop()
         {
             split = collectToMatchingTag(loopDelimiter);
         }
-        if (!m_data->next())
+        if (!m_data->advance())
         {
             break;
         }

@@ -13,8 +13,18 @@ class CFLNode;
 
 struct Loop
 {
-    std::string tag;
+    util::CFLNode* node;
+    util::CFLNode* alt_node;
     unsigned int index = 0;
+    std::vector<std::string> order;
+};
+
+enum class IterationMode
+{
+    None,
+    AltValues,
+    NormalValues,
+    Children
 };
 
 class TemplateData
@@ -24,19 +34,18 @@ public:
     ~TemplateData();
 
     void pushTag(const std::string& tag);
-    bool next();
-    bool empty() const;
+    bool advance();
+    bool hasNext() const;
     std::string value(const std::string& tag) const;
-
     bool valid() const;
 
 private:
     std::unique_ptr<util::CFLNode> loadCFL(util::File file);
-    util::CFLNode* query(const std::string& tag = "") const;
     std::string path() const;
+    IterationMode getIterationMode() const;
 
     std::unique_ptr<util::CFLNode> m_database;
     std::unique_ptr<util::CFLNode> m_resume;
-    std::vector<Loop> m_loops;
+    std::vector<Loop> m_stack;
     bool m_valid;
 };
