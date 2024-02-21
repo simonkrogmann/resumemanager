@@ -77,7 +77,7 @@
     \subheading{<@ institution @>}{<@ location @>}{<@ brief @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 
@@ -85,14 +85,14 @@
     \subheading{<@ institution @>}{<@ location @>}{<@ degree @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 
 <@| publications | \heading{Publications \hfill {\normalfont \small \textcolor{dark} { according to \href{https://portal.core.edu.au/conf-ranks/}{CORE ranking}}}}|
     \subheading{<@ name @>}{}{}
     <@ detail @> \ifx$<@ ranking @>$\else{\small \textcolor{dark} { - ranked <@ ranking @>}}\fi
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 
@@ -100,27 +100,27 @@
     \subheading{<@ name @>}{<@ brief @>}{}
     \timeperiod{<@ time @>}
     <@ description @>
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 
 <@| supervision | \heading{Co-Supervised Theses} |
     \subheading{<@ name @> (<@ level @>)}{<@ title @>}{}
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 \vspace{1.2\baselineskip}
 
 <@| teaching-assistant | \heading{Teaching (as TA)} |
     \subheading{<@ brief @>}{<@ term @>}{}
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 \vspace{1.2\baselineskip}
 
 <@| awards | \heading{Awards} |
     \subheading{<@ name @>}{<@ detail @>}{}
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 \vspace{1.2\baselineskip}
@@ -130,14 +130,14 @@
     \timeperiod{<@ from @> - <@ to @>}
     \nopagebreak
     <@ description @>
-@>|\pagebreak[0]|
+|\pagebreak[0]|@>
 
 \pagebreak[1]
 
-<@| technologies | \heading{Skills} | <@ @>@>|, |
+<@| technologies | \heading{Skills} | <@ @>|, |@>
 
 <@| languages | \heading{Languages} |
     <@ name @>: <@ level @>
-@>
+||@>
 
 \end{document}

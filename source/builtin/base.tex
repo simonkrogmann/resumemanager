@@ -54,26 +54,26 @@
     \subheading{<@ institution @>}{<@ location @>}{<@ brief @>}
     \timeperiod{<@ from @> - <@ to @>}
     <@ description @>
-@>
+||@>
 
 <@| education | \heading{Education} |
     \subheading{<@ institution @>}{<@ location @>}{<@ degree @>}
     \timeperiod{<@ from @> - <@ to @>}
     \optional{<@ description @>}
-@>
+||@>
 
 <@| projects | \heading{Projects} |
     \subheading{<@ name@>}{}{<@ brief @>}
     <@ description @>
-@>
+||@>
 
 <@| publications | \heading{Publications} |
     \subheading{<@ name@>}{\\<@ detail @>}{}
-@>
+||@>
 
 <@| teaching-assistant | \heading{Teaching (as TA)} |
     \subheading{<@ brief @>}{<@ term @>}{<@ university @>}
-@>
+||@>
 
 \switchcolumn
 \raggedright
@@ -83,16 +83,16 @@
 \mail{<@ mail @>}\\
 \url{<@ github @>}\\
 
-<@| technologies | \heading{Skills} | <@ @>@>|, |
+<@| technologies | \heading{Skills} | <@ @>|, |@>
 
 <@| awards | \heading{Awards} |
     \textbf{<@ name @>}\\
     <@ detail @>\\[10pt]
-@>
+||@>
 
 <@| languages | \heading{Languages} |
     <@ name @>: <@ level @>\\
-@>
+||@>
 
 \end{paracol}
 \end{document}

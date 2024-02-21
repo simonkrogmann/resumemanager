@@ -43,7 +43,7 @@ std::string CVCreator::collectToMatchingTag(const std::string& end,
                                             const std::string& begin,
                                             const bool& spaces)
 {
-    std::string collected = "";
+    std::stringstream collected;
     auto counter = 1;
     while (counter > 0)
     {
@@ -64,15 +64,19 @@ std::string CVCreator::collectToMatchingTag(const std::string& end,
         else
         {
             if (m_templateContent[m_position] != ' ' || spaces)
-                collected += m_templateContent[m_position];
+                collected << m_templateContent[m_position];
             ++m_position;
         }
     }
-    return collected;
+    return collected.str();
 }
-bool CVCreator::parse()
+void CVCreator::parse(int limit)
 {
-    while (m_position < m_templateContent.size())
+    if (limit == -1)
+    {
+        limit = m_templateContent.size();
+    }
+    while (m_position < limit)
     {
         if (matchTag(beginTag))
         {
@@ -88,7 +92,9 @@ bool CVCreator::parse()
         }
         else if (matchTag(endTag))
         {
-            return false;
+            std::cerr << "Extra close tag found at "
+                      << m_templateContent.substr(m_position, 10) << std::endl;
+            exit(4);
         }
         else
         {
@@ -96,7 +102,6 @@ bool CVCreator::parse()
             ++m_position;
         }
     }
-    return true;
 }
 
 void CVCreator::parseLoop()
@@ -108,42 +113,32 @@ void CVCreator::parseLoop()
         // skip section entirely
         collectToMatchingTag(endTag, beginTag);
         m_data->advance();
-        if (matchTag(loopDelimiter))
-        {
-            collectToMatchingTag(loopDelimiter);
-        }
         return;
     }
     m_output << collectToMatchingTag(loopDelimiter);
     const auto loopBegin = m_position;
+    collectToMatchingTag(endTag, beginTag, false);
+    const auto loopEnd = m_position;
+    const auto loopSep2 = m_templateContent.rfind(loopDelimiter, loopEnd);
+    const auto loopSep = m_templateContent.rfind(loopDelimiter, loopSep2 - 1);
+    m_position = loopSep + 1;
+    const auto sep = collectToMatchingTag(loopDelimiter);
+
     while (true)
     {
         m_position = loopBegin;
-        if (parse())
-        {
-            std::cerr << "Extra close tag found" << std::endl;
-            exit(4);
-        }
-        std::string split = "";
-        if (matchTag(loopDelimiter))
-        {
-            split = collectToMatchingTag(loopDelimiter);
-        }
+        parse(loopSep);
         if (!m_data->advance())
         {
             break;
         }
-        m_output << split;
+        m_output << sep;
     }
+    m_position = loopEnd;
 }
 
 std::string CVCreator::result()
 {
     parse();
-    if (m_position != m_templateContent.size())
-    {
-        std::cerr << "Extra close tag found" << std::endl;
-        exit(4);
-    }
     return m_output.str();
 }

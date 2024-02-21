@@ -28,7 +28,7 @@ private:
                                      const std::string& begin = "",
                                      const bool& spaces = true);
 
-    bool parse();
+    void parse(int limit = -1);
     void parseLoop();
 
     CVData* m_data;
